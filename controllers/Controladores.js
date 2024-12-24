@@ -1,10 +1,22 @@
 
 
 
+import { fileURLToPath } from "url";
+import dotenv from "dotenv"
+import path from "path";
 import { obtenerProductos } from "../model/carritoDB.js"; 
-import { insetarCarritoDB } from "../model/carritoDB.js";
+import { insertarCarritoDB } from "../model/carritoDB.js";
 import { updateCarritoDB } from "../model/carritoDB.js"; 
 import { borrarCarritoDB } from "../model/carritoDB.js";
+import { obtenerProductoPorId } from "../model/carritoDB.js"; 
+import { supabase } from "../model/DB.js";
+
+dotenv.config();
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 
 export async function enviarProductos(req,res){  
@@ -27,35 +39,56 @@ export async function enviarProductos(req,res){
         res.status(500).json('ocurrio un error al recibir los productos',err.message)
     }
 
-} 
+}  
 
+export async function subirProducto(datosProducto) {
+    const { nombre, precio, categoria, stock, imagen } = datosProducto;
 
-export async function insetarCarrito(req,res){ 
-    const {nombre_producto,precio,categoria,imagenes}=req.body 
-    let data={nombre_producto,precio,categoria,imagenes} 
+    try {
+        // Subir la imagen al bucket de Supabase Storage
+        const nombreArchivo = `${Date.now()}-${imagen}`;
+        const { data, error } = await supabase.storage
+            .from('imagenes') // Cambia al nombre de tu bucket de Supabase
+            .upload(nombreArchivo, imagen);
 
-    try{
-        let response=await insetarCarritoDB(data) 
+        if (error) {
+            throw new Error('Error subiendo la imagen: ' + error.message);
+        }
 
-        if(!response.success){
-         return res.status(500).json('ocurrio un error al insetar los productos',response.message)
-        } 
+        // Obtener la URL pública de la imagen subida
+        const urlImagen = supabase.storage
+            .from('imagenes')
+            .getPublicUrl(nombreArchivo).data.publicUrl;
 
-        res.json({actualizado:true,data:response.data}) 
-    } 
+        // Insertar el producto en la tabla incluyendo la URL de la imagen y los datos adicionales
+        const { error: errorInsert } = await supabase
+            .from('productos')
+            .insert([{ nombre, precio, categoria, stock, url_imagen: urlImagen }]);
 
-    catch(err){
-        res.status(500).json('ocurrio un error al insetar los productos',err.message)
+        if (errorInsert) {
+            throw new Error('Error insertando el producto: ' + errorInsert.message);
+        }
+
+    } catch (error) {
+        console.error(error.message);
+
     }
+}
 
-} 
+
 
 
 
 export async function updateCarrito(req,res){  
+    const urlBackImagen = process.env.URL_BACK_IMAGEN;
+    const imagen = req.file ? req.file.filename : null;
+    const url = imagen ? `${urlBackImagen}/${imagen}` : null;
+ 
+     
+
     let {id}=req.params 
-    let {nombre_producto,precio,categoria,imagenes}=req.body 
-    let updata={nombre_producto,precio,categoria,imagenes}
+    let {nombre_producto,precio,categoria}=req.body 
+    let updata={nombre_producto,precio,categoria,imagenes:url}
 
     try{ 
       
@@ -77,11 +110,11 @@ export async function updateCarrito(req,res){
 } 
 
 export async function deleteCarrito(req, res) {
-    let { id } = req.params; // Extraer el ID de los parámetros de la URL
-
+    let { id } = req.params; // Extraer el ID de los parámetros de la URL 
+    console.log(id)
     try {
         let data = await borrarCarritoDB(id); 
-        console.log(data)
+ 
 
         if (!data) {
             return res.status(404).json({ success: false, message: 'Producto no encontrado' });
@@ -91,4 +124,26 @@ export async function deleteCarrito(req, res) {
     } catch (err) {
         res.status(500).json({ success: false, message: 'Error eliminando el producto', error: err.message });
     }
-}
+} 
+
+export async function obtenerProductoID(req,res){  
+    let {id}=req.params 
+
+    try{ 
+        let data=await obtenerProductoPorId(id) 
+
+        if(!data){
+            console.log('no se recibieron los productos')
+        } 
+
+        res.json({actulizado:true,data})
+    } 
+
+    catch(err){
+        res.status(500).json('ocurrio un error al recibir los productos',err.message)
+    }
+
+} 
+
+
+

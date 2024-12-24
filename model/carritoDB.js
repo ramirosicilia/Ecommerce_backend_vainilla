@@ -1,10 +1,6 @@
 import { supabase } from "./DB.js"; 
 
 
-
-
-
-
 export async function  obtenerProductos(){
 
     try {
@@ -27,7 +23,7 @@ export async function  obtenerProductos(){
      
 } 
 
-export async function insetarCarritoDB(datos){ 
+export async function insertarCarritoDB(datos){ 
 
   try{
     const { data:result, error } = await supabase
@@ -83,12 +79,13 @@ export async function updateCarritoDB(id,datos){
 export async function borrarCarritoDB(id) { 
 
   try{ 
-    const { data,error } = await supabase
+    const { data,error } = await supabase 
+  
     .from('productos') // Nombre de tu tabla
     .delete()
     .eq("producto_id",id) // Selecciona el producto que deseas eliminar
     .select()
-
+   console.log(data)
     if (error) {
       console.error('Error eliminando los productos:', error.message);
       return res.status(500).json({ success: false, message: 'Error eliminando los productos' });  
@@ -104,4 +101,32 @@ export async function borrarCarritoDB(id) {
     return res.status(500).json({ success: false, message: 'Error eliminando los productos' });  
   }
   
-}
+} 
+
+export async function obtenerProductoPorId(id) { 
+
+  try{ 
+    const { data,error } = await supabase 
+  
+    .from('productos') // Nombre de tu tabla
+    .select()
+    .eq("producto_id",id) // Selecciona el producto que deseas eliminar
+    .select()
+   console.log(data)
+    if (error) {
+      console.error('Error eliminando los productos:', error.message);
+      return res.status(500).json({ success: false, message: 'Error eliminando los productos' });  
+    }  
+    
+    return data;
+  
+
+  } 
+
+  catch(err){
+    console.error('Error en la eliminación de productos:', err.message);
+    return res.status(500).json({ success: false, message: 'Error eliminando los productos' });  
+  }
+  
+} 
+

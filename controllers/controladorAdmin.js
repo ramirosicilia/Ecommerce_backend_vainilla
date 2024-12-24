@@ -1,11 +1,48 @@
-import dotenv from "dotenv"
+import e from "express";
+import { administradorLogeoDB } from "../model/adminDB.js";
+import { obtenerAdminitrador } from "../model/adminDB.js";
 
-dotenv.config() 
+export async function administradorRegistro(req, res) { 
+    let { nombre_usuario, email, contrasena } = req.body;
+    let data = { nombre_usuario, email, contrasena };
 
-const Url_backend=process.env.UL_BACKEND
+    try {
+        let response = await administradorLogeoDB(data);
 
-export async function adminVista(req,res) { 
+        if (!response.success) {
+            return res.status(500).json({
+                message: 'ocurrio un error al insertar los productos',
+                error: response.message
+            });
+        }
 
-    res.render('admin',{urlBackend:Url_backend})
-    
+        res.json({ actualizado: true, data: response.data });
+
+    } catch (err) {
+        res.status(500).json({
+            message: 'ocurrio un error al insertar los productos',
+            error: err.message
+        });
+    }
+} 
+
+export async function obtenerAdminitradorController(req, res) {
+    try {
+        let response = await obtenerAdminitrador();
+
+        if (!response.success) {
+            return res.status(500).json({
+                message: 'ocurrio un error al obtener los productos',
+                error: response.message
+            });
+        }
+
+        res.json({ actualizado: true, data: response.data });
+
+    } catch (err) {
+        res.status(500).json({
+            message: 'ocurrio un error al obtener los productos',
+            error: err.message
+        });
+    }
 }

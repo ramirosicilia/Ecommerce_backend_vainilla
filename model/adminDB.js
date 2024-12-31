@@ -25,7 +25,7 @@ export async function administradorLogeoDB(usuarios) {
   } 
   
 
-  export async function obtenerAdminitrador() {
+  export async function obtenerAdministrador() {
     try {
       const { data, error } = await supabase
         .from('administrador')

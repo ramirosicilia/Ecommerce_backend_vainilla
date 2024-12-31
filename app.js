@@ -3,20 +3,30 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
- import router from "./routers/Routers.js"; 
+import router from "./routers/Routers.js"; 
+
+
+ 
 
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://127.0.0.1:5500', // Especifica el origen permitido
+  credentials: true,               // Permite el envío de cookies y encabezados de autenticación
+}));
+
 
 const __fieldName=fileURLToPath(import.meta.url);
 const __dirname=path.dirname(__fieldName);
 
 
-app.use("/", express.static(path.join(__dirname, './public')));
+app.use("/", express.static(path.join(__dirname, "../Ecommerce-js-production-Front/public"))); 
+app.use("/uploads", express.static(path.join(__dirname, './uploads'))); 
+
+
 
 
 

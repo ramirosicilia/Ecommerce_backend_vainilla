@@ -25,21 +25,29 @@ export async function administradorLogeoDB(usuarios) {
   } 
   
 
-  export async function obtenerAdministrador() {
+  export async function obtenerAdministrador(user) {
     try {
-      const { data, error } = await supabase
-        .from('administrador')
-        .select('*');
-  
-      if (error) {
-        console.error('Error obteniendo los usuarios:', error.message);
-        return { success: false, message: 'Error obteniendo los usuarios', error: error.message };
-      }
-  
-      return { success: true, data };
+        const { data, error } = await supabase
+            .from('administrador')
+            .select()
+            .eq('nombre_usuario', user);
+
+        if (error) {
+            console.error('Error obteniendo los usuarios:', error.message);
+            return { success: false, message: error.message };
+        }
+
+        if (data.length === 0) {
+            return { success: false, message: 'Administrador no encontrado' };
+        }
+
+     
+
+        let dataAdmin = data; 
+        console.log(dataAdmin,'dataAdmin DB');
+        return dataAdmin
     } catch (err) {
-      console.error('Error al obtener los usuarios:', err.message);
-      return { success: false, message: 'Error al obtener los usuarios', error: err.message };
+        console.error('Error al obtener los usuarios:', err.message);
+        return { success: false, message: 'Error al obtener los usuarios', error: err.message };
     }
-  }
-  
+}

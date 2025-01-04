@@ -1,6 +1,7 @@
 import { crearUserDB } from "../model/usuarioDB.js"
 import { obtenerUsuarioDB } from "../model/usuarioDB.js"
-import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs"; 
+
 
 
 export async function crearUser(req, res){      

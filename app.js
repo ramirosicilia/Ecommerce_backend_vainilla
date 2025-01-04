@@ -6,6 +6,7 @@ import cors from "cors";
 import router from "./routers/Routers.js"; 
 
 
+
  
 
 
@@ -23,10 +24,17 @@ const __fieldName=fileURLToPath(import.meta.url);
 const __dirname=path.dirname(__fieldName);
 
 
-app.use("/", express.static(path.join(__dirname, "../Ecommerce-js-production-Front/public"))); 
+
+
+
+
+app.use("/verificar-email",express.static( path.join(__dirname,  "../Ecommerce-js-production-Front/public"))) 
+app.use("/nuevo-registro",express.static( path.join(__dirname,  "../Ecommerce-js-production-Front/public"))) 
+app.use("/public", express.static(path.join(__dirname, "../Ecommerce-js-production-Front/public")));
+
+
+
 app.use("/uploads", express.static(path.join(__dirname, './uploads'))); 
-
-
 
 
 

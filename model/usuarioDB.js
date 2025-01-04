@@ -38,4 +38,31 @@ catch(err){
     return { success: false, message: 'Error al obtener los usuarios', error: err.message };
 }
 
+} 
+
+export async function updateUsuarioDB(user,pass,mail) {
+    try {
+      const { data, error } = await supabase
+      .from('usuarios')
+      .update({ usuario: user, contrasena: pass })
+      .eq('email',mail)
+      .select()
+        if (error) {
+            console.error('Error actualizando el usuario:', error.message);
+            return { success: false, message: error.message };
+        }
+
+        if (data.length === 0) {
+            return { success: false, message: 'Usuario no encontrado' };
+        }
+
+        return { success: true, data };
+    } catch (err) {
+        console.error('Error al actualizar el usuario:', err.message);
+        return { success: false, message: err.message };
+    }
+
 }
+
+
+

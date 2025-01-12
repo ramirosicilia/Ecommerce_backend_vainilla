@@ -1,61 +1,55 @@
 import { supabase } from "./DB.js"; 
 
 
-export async function  obtenerProductos(){
+export async function  obtenerProductosYCategorias(){
 
-    try {
-        const { data, error } = await supabase
-          .from('productos') // Nombre de tu tabla
-          .select('*'); // Selecciona todas las columnas o especifica las que necesites
-    
-        if (error) {
-          console.error('Error obteniendo los productos:', error.message);
-          return res.status(500).json({ success: false, message: 'Error obteniendo los productos' });  
-        }  
-       
-        return data
-    
-      
-      } catch (err) {
-        console.error('Error en la obtención de productos:', err.message);
-        
-      } 
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('*, categorias(categoria_id, nombre_categoria, activo)'); // Select con join implícito
+
+    if (error) {
+      console.error('Error al obtener productos y categorías:', error.message);
+      return res.status(500).json({ error: error.message });
+    }
+
+    console.log('Productos y categorías obtenidos:', data);
+     return data
+
+  } catch (err) {
+    console.error('Error en la consulta:', err.message);
+    res.status(500).json({ error: err.message });
+  }
      
 } 
 
-export async function insertarCarritoDB(datos){ 
-
-  try{
-    const { data:result, error } = await supabase
-    .from('productos') // Nombre de tu tabla
-    .insert([datos]) // Selecciona todas las columnas o especifica las que necesites
-    .select()
+export async function insertarCarritoDB(datos) { 
+  try {
+    const { data: result, error } = await supabase
+      .from('productos')
+      .insert([datos])
+      .select(); // Asegúrate de seleccionar para obtener la respuesta
 
     if (error) {
-      console.error('Error insertando los productos:', error.message);
-      return res.status(500).json({ success: false, message: 'Error insertando los productos' });  
-    }   
+      throw new Error(`Error insertando los productos: ${error.message}`);
+    }
 
-    console.log('Producto insertado:', result[0]);
-    
-    return {success:true,data:result[0]};
-  }
-
-  catch(err){
+    return result[0]; // Devuelve el resultado del producto insertado
+  } catch (err) {
     console.error('Error en la inserción de productos:', err.message);
-    return res.status(500).json({ success: false, message: 'Error insertando los productos' });  
+    throw err; // Lanza el error para que el controlador lo maneje
   }
+}
 
-} 
 
 
-export async function updateCarritoDB(id,datos){ 
+export async function updateCarritoDB(id,nombre,price,category,imagen,stock ){ 
 
 
   try{
     const { data, error } = await supabase
     .from('productos') // Nombre de tu tabla
-    .update(datos) // Selecciona todas las columnas o especifica las que necesites
+    .update({nombre_producto:nombre,precio:price,categoria_id:category ,imagenes:imagen ,stock:stock}) // Selecciona todas las columnas o especifica las que necesites
     .eq("producto_id",id) // Selecciona el producto que deseas actualizar
     .select()
 
@@ -63,8 +57,10 @@ export async function updateCarritoDB(id,datos){
       console.error('Error actualizando los productos:', error.message);
       return res.status(500).json({ success: false, message: 'Error actualizando los productos' });  
     }  
+
+    console.log(data,'la data update')
     
-    return data;
+    return data[0];
   }
 
   catch(err){

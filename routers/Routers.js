@@ -24,15 +24,17 @@ router.get('/ruta-protegida', authenticateToken)
 router.post("/login-logeado",controladorLogeo,controladorAdmin,controladorUser)
 router.post("/login",administradorRegistro) 
 router.post("/registro",crearUser) 
-router.post("/subir-productos",upload.single('imagen'),respuestaInsercion) 
 router.post("/recuperacion-cuenta",recuperacionCuentaController)
 router.get('/verificar-email/:token', recuperacionMailControlador) 
-router.post("/nuevo-registro",nuevoRegistroControlador)
-router.put("/actualizar-productos/:id",updateCarrito) 
+router.post("/nuevo-registro",nuevoRegistroControlador) 
+router.post("/subir-productos",upload.single('imagen'),respuestaInsercion) 
+router.put("/actualizar-productos/:id", upload.single('imagen'),updateCarrito) 
 router.delete("/borrar-productos/:id",deleteCarrito) 
 
 
 
 
-export default router
+export default router 
+
+
     

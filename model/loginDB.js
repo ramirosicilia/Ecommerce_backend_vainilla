@@ -31,33 +31,6 @@ export async function logeoDB(user){
     
 } 
 
-export async function updateCookie(user,token){
-
-   try{
-      const { data ,error } = await supabase
-             .from('usuarios')
-             .update({ cookie: token})
-             .eq('usuario', user)
-             .select();
-             
-             if(error){
-               throw new Error("mensaje de error",error.message);
-               
-             }
-
-             return{
-               data
-             }
-
-   } 
-
-
-
-   catch{ 
-      console.log('no se pudo actualizar la cookie')
-
-   }
-} 
 
 export async function recuperacionCuentaDB(mail){
 

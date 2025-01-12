@@ -2,7 +2,7 @@ import { supabase } from "./DB.js";
 
 export async function crearUserDB(info) { 
     try {
-        console.log(info, 'dat 55555555');
+     
         
         const { data, error } = await supabase
             .from('usuarios') // Nombre de tu tabla
@@ -12,7 +12,7 @@ export async function crearUserDB(info) {
             throw new Error(error.message);
         }
         
-        console.log(data, 'data');
+    
         
         return data[0]; // Retorna el primer objeto insertado si existe
         
@@ -23,21 +23,32 @@ export async function crearUserDB(info) {
 }
 
 
-export async function obtenerUsuarioDB(user, email) {
-    try{
+export async function obtenerUsuarioDB(user,) {
+    try {
+        // Consulta para verificar si el usuario o el email ya existen
         const { data, error } = await supabase
-        .from('usuarios')
-        .select()
-        .eq('usuario', user, 'email', email);
+            .from('usuarios')
+            .select()
+            .eq("usuario" , user);
 
-        return { success: true, data };
-} 
+        // Manejo de errores en la consulta
+        if (error) {
+            throw error;
+        }
 
-catch(err){
-    console.error('Error al obtener los usuarios:', err.message);
-    return { success: false, message: 'Error al obtener los usuarios', error: err.message };
-}
+        // Validación de resultados: verifica si ya existe usuario o email
+        if (data.length > 0) {
+            // Si existe al menos un registro, retorna que ya existe
+            return data
+        }
 
+        // Si no se encuentran registros, retorna que no existen duplicados
+        return { success: false, message: 'no ay usuarios registrados.' };
+    } catch (err) {
+        // Manejo de errores inesperados
+        console.error('Error al verificar existencia:', err.message);
+        return { success: false, message: 'Error al verificar existencia.', error: err.message };
+    }
 } 
 
 export async function updateUsuarioDB(user,pass,mail) {
@@ -62,7 +73,14 @@ export async function updateUsuarioDB(user,pass,mail) {
         return { success: false, message: err.message };
     }
 
-}
+} 
+
+
+
+
+
+
+
 
 
 

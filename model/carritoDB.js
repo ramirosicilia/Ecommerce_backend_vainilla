@@ -5,15 +5,14 @@ export async function  obtenerProductosYCategorias(){
 
   try {
     const { data, error } = await supabase
-      .from('productos')
-      .select('*, categorias(categoria_id, nombre_categoria, activo)'); // Select con join implícito
+      .from('productos',)
+      .select('* , categorias (categoria_id, nombre_categoria ,activo)'); // Select con join implícito
 
     if (error) {
       console.error('Error al obtener productos y categorías:', error.message);
       return res.status(500).json({ error: error.message });
     }
 
-    console.log('Productos y categorías obtenidos:', data);
      return data
 
   } catch (err) {
@@ -124,5 +123,166 @@ export async function obtenerProductoPorId(id) {
     return res.status(500).json({ success: false, message: 'Error eliminando los productos' });  
   }
   
+}  
+
+export async function obtenerCatergoriaDB(category){ 
+
+  try { 
+
+    let { data:readCategory, error } = await supabase
+  .from('categorias')
+  .select("nombre_categoria")
+  .eq("nombre_categoria",category)
+     
+   console.log(readCategory, ' esto obtuve') 
+
+   if(error){
+    console.log('no se obtuvo la categoria')
+   } 
+
+   return readCategory
+    
+    
+  } catch (err) {
+    // Captura errores inesperados
+    console.error('Hubo un error al seleccionar la categoría en la base de datos:', err);
+    return null;  // Retorna null en caso de error general
+  }
+
+
+}
+
+
+
+
+export async function ingresarCategoriaDB(category) {
+  try { 
+    
+    // Insertamos el objeto con las propiedades correctas
+    const { data, error } = await supabase
+      .from('categorias')
+      .insert([category])
+      .select()
+         
+
+    // Si hay un error, lo manejamos
+    if (error) {
+      console.error('Error al insertar:', error);
+      return null;  // Si ocurre un error, retornamos null
+    }
+
+    // Si la inserción fue exitosa, retornamos los datos insertados
+    console.log('Categoría insertada:', data);
+    return data;
+
+  } catch (err) {
+    // Captura errores inesperados
+    console.error('Hubo un error al insertar la categoría en la base de datos:', err);
+    return null;  // Retorna null en caso de error general
+  }
 } 
+
+
+ 
+export async function actualizarCategoriaDB(nombreID,nombre){ 
+
+  try{ 
+  
+const { data, error } = await supabase
+.from('categorias')
+.update({ nombre_categoria:nombre })
+.eq('nombre_categoria', nombreID)
+.select()
+        
+         if(error){
+          console.log('hubo un error al actualizar la categoria')
+         } 
+     
+         return data
+
+  } 
+
+  catch(err){
+    console.log('hubo un error al actulizar la categoria de la base de datos',err)
+  }
+
+
+ }
+
+
+
+
+ export async function eliminarCategoriaDB(nombre){ 
+
+  try{ 
+    
+const { error } = await supabase
+.from('categorias')
+.delete()
+.eq('nombre_categoria',nombre)
+.select()
+        
+
+  } 
+
+  catch(err){
+    console.log('hubo un error al eliminar la categoria de la base de datos',err)
+  }
+
+
+ } 
+
+
+  export async function desactivarCategoryDB(category,active){  
+
+    try{ 
+  
+      const { data, error } = await supabase
+      .from('categorias')
+      .update({ activo:active })
+      .eq('nombre_categoria', category)
+      .select()
+              
+               if(error){
+                console.log('hubo un error al actualizar la categoria')
+               } 
+           
+               return data
+      
+          } 
+
+        catch(err){
+          console.log('hubo un error al desactivar la categoria',err)
+        }
+ 
+
+    
+  } 
+
+
+  export async function desactivarProductosDB(id,active){  
+
+    try{ 
+  
+      const { data, error } = await supabase
+      .from('productos')
+      .update({ activacion:active })
+      .eq('producto_id', id)
+      .select()
+              
+               if(error){
+                console.log('hubo un error al actualizar los productos')
+               } 
+           
+               return data
+      
+          } 
+
+        catch(err){
+          console.log('hubo un error al desactivar el producto',err)
+        }
+ 
+
+    
+  }
 

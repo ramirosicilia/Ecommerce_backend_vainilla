@@ -1,12 +1,14 @@
 
-import { administradorLogeoDB } from "../model/adminDB.js";
-import { borrarCarritoDB, insertarCarritoDB, updateCarritoDB } from "../model/carritoDB.js";
+import { administradorLogeoDB, categoriasAgregar } from "../model/adminDB.js";
+import { borrarCarritoDB, ingresarCategoriaDB, insertarCarritoDB, updateCarritoDB } from "../model/carritoDB.js";
 import multer from "multer";
 import { fileURLToPath } from "url";
 import path from "path"; 
 import dotenv from "dotenv" 
 import { console } from "inspector";
-import { categoriasAgregar } from "../model/adminDB.js";
+
+
+
 
 
 dotenv.config();
@@ -145,6 +147,7 @@ export async function deleteCarrito(req, res) {
         res.status(500).json({ success: false, message: 'Error eliminando el producto', error: err.message });
     }
 }  
+
 
 
  

@@ -212,16 +212,19 @@ const { data, error } = await supabase
 
 
 
- export async function eliminarCategoriaDB(nombre){ 
+ export async function eliminarCategoriaDB(id){ 
 
   try{ 
     
 const { error } = await supabase
 .from('categorias')
 .delete()
-.eq('nombre_categoria',nombre)
-.select()
-        
+.eq('categoria_id',id)
+.select() 
+    
+          if(error){
+           console.log('hubo un error al eliminar la categoria')
+          }
 
   } 
 
@@ -284,5 +287,32 @@ const { error } = await supabase
  
 
     
+  } 
+
+
+  export async function allCategoriesDB(){ 
+
+
+    try { 
+
+      let { data:readCategory, error } = await supabase
+    .from('categorias')
+    .select("nombre_categoria , categoria_id")
+       
+     console.log(readCategory, ' esto obtuve') 
+  
+     if(error){
+      console.log('no se obtuvo la categoria')
+     } 
+  
+     return readCategory
+      
+      
+    } catch (err) {
+      // Captura errores inesperados
+      console.error('Hubo un error al seleccionar la categoría en la base de datos:', err);
+      return null;  // Retorna null en caso de error general
+    }
+
   }
 

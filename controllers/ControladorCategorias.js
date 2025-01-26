@@ -1,5 +1,5 @@
 
-import { actualizarCategoriaDB, desactivarCategoryDB, eliminarCategoriaDB, obtenerCatergoriaDB, obtenerProductosYCategorias } from "../model/carritoDB.js"; 
+import { actualizarCategoriaDB, allCategoriesDB, desactivarCategoryDB, eliminarCategoriaDB, obtenerCatergoriaDB, obtenerProductosYCategorias } from "../model/carritoDB.js"; 
 import { ingresarCategoriaDB } from "../model/carritoDB.js";
 
 
@@ -100,15 +100,18 @@ export async function agregarCategoriaControllers(req,res) {
   export async function eliminarCategoriaController(req,res){  
 
   try{ 
-    const {nombre}=req.body 
+    const {id}=req.params 
+    console.log(id,'id de la categoria')  
 
-    if(!nombre){
-      throw new Error("no se obtubo el nombre de la categoria")
+    if(!id){
+      throw new Error("no se obtubo el id de la categoria")
     }
 
-    let categoryEliminada=await eliminarCategoriaDB(nombre)
+    let categoryEliminada=await eliminarCategoriaDB(id) 
+    console.log(categoryEliminada, 'se elimino')
 
-   return res.json(nombre)
+   return res.json({message:'se elimino con exito'})
+
 
 
   } 
@@ -132,5 +135,27 @@ export async function agregarCategoriaControllers(req,res) {
     console.log(categoria,activo , 'se obtuvieron') 
     res.json({message:'se desactivo con exicto',desactivar:desactivarCategoriaDB[0].activo})
     
-  }
+  } 
+
+  export async function allCategoryesController(req,res){ 
+
+    try{ 
+  
+      const categorias=await allCategoriesDB()
+  
+      if(categorias.length===0){
+        throw new Error('no se obtuvieron las categorias')
+      } 
+
+    console.log(categorias,'todas las categorias')
+        res.json(categorias)
+  
+    } 
+  
+    catch(err){ 
+      console.log(err.message)
+
+  } 
+
+}
   

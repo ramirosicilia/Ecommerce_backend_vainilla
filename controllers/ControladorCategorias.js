@@ -1,6 +1,6 @@
 
-import { actualizarCategoriaDB, allCategoriesDB, desactivarCategoryDB, eliminarCategoriaDB, obtenerCatergoriaDB, obtenerProductosYCategorias } from "../model/carritoDB.js"; 
-import { ingresarCategoriaDB } from "../model/carritoDB.js";
+import { actualizarCategoriaDB, allCategoriesDB,ingresarCategoriaDB, desactivarCategoryDB, eliminarCategoriaDB, obtenerCatergoriaDB} from "../model/carritoDB.js"; 
+
 
 
 
@@ -8,7 +8,7 @@ export async function getProductsCategorysController(req,res){
 
     try{ 
   
-      const categorias=await obtenerProductosYCategorias() 
+      const categorias=await allCategoriesDB() 
   
       if(categorias.length===0){
         throw new Error('no se obtuvieron los productos y categorias')
@@ -51,7 +51,7 @@ export async function agregarCategoriaControllers(req,res) {
         console.log(categoryNew, 'se insertooo')
   
       
-    
+  
         return res.json(categoryNew)
        
        }  
@@ -63,9 +63,9 @@ export async function agregarCategoriaControllers(req,res) {
         return res.status(500).json(err.menssage)
        }
      
-
        
   }  
+  
 
 
   export async function actualizarCategoriaController(req,res){  
@@ -137,25 +137,4 @@ export async function agregarCategoriaControllers(req,res) {
     
   } 
 
-  export async function allCategoryesController(req,res){ 
-
-    try{ 
-  
-      const categorias=await allCategoriesDB()
-  
-      if(categorias.length===0){
-        throw new Error('no se obtuvieron las categorias')
-      } 
-
-    console.log(categorias,'todas las categorias')
-        res.json(categorias)
-  
-    } 
-  
-    catch(err){ 
-      console.log(err.message)
-
-  } 
-
-}
-  
+ 

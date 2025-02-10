@@ -1,6 +1,6 @@
 
 import dotenv from "dotenv";
-import {  obtenerProductosYCategorias } from "../model/carritoDB.js"; 
+ import { obtenerProductos } from "../model/carritoDB.js";
 import { obtenerProductoPorId } from "../model/carritoDB.js"; 
 import { logeoDB, recuperacionCuentaDB} from "../model/loginDB.js";
 import bcrypt from "bcryptjs";
@@ -29,7 +29,7 @@ dotenv.config();
 export async function enviarProductos(req,res){  
     
     try{   
-        let datos=await obtenerProductosYCategorias() 
+        let datos=await obtenerProductos()
 
         if(!datos){
            throw new Error('no se recibieron los productos')
@@ -210,7 +210,7 @@ export async function controladorAdmin(req,res,next){
 
         const {isUser,dataUser,token}=req 
           if( isUser){
-              return res.json({respuesta:' usuario exictosamente',token,usuario:dataUser,reedireccionar:'../public/paginaProductos.html'})
+              return res.json({respuesta:' usuario exictosamente',token,usuario:dataUser,reedireccionar:'../public/productosUsuario.html'})
           } 
      
             return next()

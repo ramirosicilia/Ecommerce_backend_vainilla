@@ -24,10 +24,6 @@ const __fieldName=fileURLToPath(import.meta.url);
 const __dirname=path.dirname(__fieldName);
 
 
-
-
-
-
 app.use("/verificar-email",express.static( path.join(__dirname,  "../Ecommerce-js-production-Front/public"))) 
 app.use("/nuevo-registro",express.static( path.join(__dirname,  "../Ecommerce-js-production-Front/public"))) 
 app.use("/public", express.static(path.join(__dirname, "../Ecommerce-js-production-Front/public")));

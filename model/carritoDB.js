@@ -1,12 +1,12 @@
 import { supabase } from "./DB.js"; 
 
 
-export async function  obtenerProductosYCategorias(){
+export async function  obtenerProductos(){
 
   try {
     const { data, error } = await supabase
       .from('productos',)
-      .select('* , categorias (categoria_id, nombre_categoria ,activo)'); // Select con join implícito
+      .select('*'); 
 
     if (error) {
       console.error('Error al obtener productos y categorías:', error.message);
@@ -297,7 +297,7 @@ const { error } = await supabase
 
       let { data:readCategory, error } = await supabase
     .from('categorias')
-    .select("nombre_categoria , categoria_id")
+    .select("*")
        
      console.log(readCategory, ' esto obtuve') 
   

@@ -10,8 +10,7 @@ import { authenticateToken, controladorAdmin,
  import { crearUser } from "../controllers/controladorUser.js";
  import { upload } from "../controllers/controladorAdmin.js"; 
  import express from "express" 
- import { actualizarCategoriaController, agregarCategoriaControllers, allCategoryesController, desactivarCategoriasController, eliminarCategoriaController, getProductsCategorysController } from "../controllers/ControladorCategorias.js";
- import { obtenerProductosVentaControlador } from "../controllers/controllerProductSale.js";
+ import { actualizarCategoriaController, agregarCategoriaControllers, desactivarCategoriasController, eliminarCategoriaController, getProductsCategorysController } from "../controllers/ControladorCategorias.js";
 
 
 
@@ -35,9 +34,8 @@ router.put("/desactivar-categoria",desactivarCategoriasController)
 router.delete("/eliminar-categoria/:id",eliminarCategoriaController)
 router.post("/subir-productos",upload.single('imagen'),respuestaInsercion) 
 router.put("/actualizar-productos/:id", upload.single('imagen'),updateCarrito) 
-router.get("/allCategories",allCategoryesController)
 router.delete("/borrar-productos/:id",deleteCarrito) 
-router.get("/obtener-productos-venta",obtenerProductosVentaControlador)
+
 
 
 

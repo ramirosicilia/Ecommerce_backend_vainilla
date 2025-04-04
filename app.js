@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
 import router from "./routers/Routers.js"; 
+import morgan from "morgan";
 
 
 
@@ -13,9 +14,10 @@ import router from "./routers/Routers.js";
 dotenv.config();
 
 const app = express();
+//app.use(morgan("dev"))
 app.use(express.json());
 app.use(cors({
-  origin: 'http://127.0.0.1:5500', // Especifica el origen permitido
+  origin: 'http://127.0.0.1:5502', // Especifica el origen permitido
   credentials: true,               // Permite el envío de cookies y encabezados de autenticación
 }));
 

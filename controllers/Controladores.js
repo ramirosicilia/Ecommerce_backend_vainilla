@@ -15,10 +15,6 @@ import { obtenerUsuarioDB,updateUsuarioDB } from "../model/usuarioDB.js";
 
 
 
-
-
-
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); 
 let adjuntarMail=null

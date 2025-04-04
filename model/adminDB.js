@@ -77,21 +77,3 @@ export async function updateUserDB(user,pass,mail) {
 } 
 
 
-export async function categoriasAgregar(categoria) {
-  const { data: categoriaData, error: categoriaError } = await supabase
-    .from('categorias')
-    .select('categoria_id')
-    .eq('nombre_categoria', categoria); 
-
-    console.log(categoriaData)
-
-  if (categoriaError) {
-    throw new Error(`Error al buscar la categoría: ${categoriaError.message}`);
-  }
-
-  if (!categoriaData || categoriaData.length === 0) {
-    throw new Error(`La categoría '${categoria}' no existe.`);
-  }
-
-  return categoriaData[0].categoria_id;
-}

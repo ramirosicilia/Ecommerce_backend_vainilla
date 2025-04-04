@@ -480,6 +480,8 @@ export async function agregarImagenesDB(producto_id, files) {
   const imageUrls = files.map(file => `${urlBack}/uploads/${file.filename}`);
 
 
+  
+
   // Buscar si ya hay imágenes asociadas al producto
   const { data: existingImages } = await supabase
       .from('imagenes')

@@ -2,7 +2,8 @@
 import { administradorLogeoDB
     
 } from "../model/adminDB.js";
-import { borrarCarritoDB, insertarCarritoDB, insertarImagenDB, obtenerImagenesDB, actualizarImagenesDB, coloresAgregarID, tallesAgregarID, ingresarColoresDB, ingresarTallesDB, ingresarIDVariantesDB, updateNombreProductoDB, updatePrecioProductoDB, updateDetallesProductoDB, updateDescripcionProductoDB, updateColorProductoDB, updateTalleProductoDB, updateStockProductoDB, updateCategoriaProductoDB, agregarImagenesDB} from "../model/carritoDB.js";
+import { borrarCarritoDB, insertarCarritoDB, insertarImagenDB, obtenerImagenesDB, actualizarImagenesDB, coloresAgregarID, tallesAgregarID, ingresarColoresDB, ingresarTallesDB, ingresarIDVariantesDB, updateNombreProductoDB, updatePrecioProductoDB, updateDetallesProductoDB, updateDescripcionProductoDB, updateColorProductoDB, updateTalleProductoDB, updateStockProductoDB, updateCategoriaProductoDB, agregarImagenesDB,eliminarImagenesDB,
+  eliminarNombreProductoDB,eliminarPrecioProductoDB,eliminarTallesProductoDB,eliminarColoresProductoDB,eliminarStockProductoDB,eliminarDetalleProductoDB,eliminarDescripcionProductoDB} from "../model/carritoDB.js";
 import multer from "multer";
 import { fileURLToPath } from "url";
 import path from "path"; 
@@ -375,6 +376,7 @@ export async function agregarImagenesController(req, res) {
 
 
 export async function actualizarImagenesController(req, res) {
+
     const id = req.params.id; 
     const urlAntigua = req.body.urlAntigua; // Obtener la URL antigua desde el body
 
@@ -411,4 +413,111 @@ export async function actualizarImagenesController(req, res) {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+} 
+
+export async function eliminarImagenesController(req, res) {
+    const id = req.params.id; // ID de la imagen a eliminar
+    const urlAntigua = req.body.urlAntigua; // URL antigua de la imagen a eliminar
+
+    try {
+        // Validar que se haya enviado una URL antigua
+        if (!urlAntigua) {
+            throw new Error('No se recibió la URL antigua');
+        }
+
+        // Eliminar la imagen de la base de datos
+        let dataImagen = await eliminarImagenesDB(id, urlAntigua);
+
+        if (!dataImagen) {
+            throw new Error('No se pudo eliminar la imagen');
+        }
+
+        res.json({ mensaje: "Imagen eliminada con éxito" });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
+
+export async function  eliminarNombrecontroller(req,res){
+
+
+  let id=req.params.id 
+
+await eliminarNombreProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+export async function eliminarPrecioController(req,res){
+
+
+  let id=req.params.id 
+
+   await eliminarPrecioProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+
+
+export async function eliminarTallesController(req,res){
+
+
+  let id=req.params.id 
+
+   await eliminarTallesProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+export async function eliminarColoresController(req,res){
+
+
+  let id=req.params.id 
+
+   await eliminarColoresProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+export async function eliminarStockController(req,res){
+
+
+  let id=req.params.id 
+ 
+   await eliminarStockProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+export async function eliminarDetalleController(req,res){
+
+
+  let id=req.params.id 
+ 
+   await eliminarDetalleProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+export async function eliminarDescripcionController(req,res){
+
+
+  let id=req.params.id 
+ 
+   await eliminarDescripcionProductoDB(id)
+
+  res.json("actualizado")
+} 
+
+
+
+
+
+
+
+
+
+
+

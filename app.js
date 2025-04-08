@@ -21,6 +21,7 @@ app.use(cors({
   credentials: true,               // Permite el envío de cookies y encabezados de autenticación
 }));
 
+app.use(express.urlencoded({ extended: true }));
 
 const __fieldName=fileURLToPath(import.meta.url);
 const __dirname=path.dirname(__fieldName);

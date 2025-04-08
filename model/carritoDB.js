@@ -1,3 +1,4 @@
+import { url } from "inspector/promises";
 import { supabase } from "./DB.js"; 
 import dotenv from "dotenv"
 
@@ -694,10 +695,6 @@ export async function updateStockProductoDB(stock, id) {
 
 
 
-
-
-
-
 export async function actualizarImagenesDB(id, urlAntigua, urlNueva) {
   try {
     // Primero obtenemos el array de imágenes actual
@@ -714,7 +711,8 @@ export async function actualizarImagenesDB(id, urlAntigua, urlNueva) {
 
     let urlsArray = imagenData.urls || []; // Si está vacío, asignamos un array vacío
 
-    // Buscar la URL antigua y reemplazarla con la nueva
+    // Buscar la URL antigua y reemplazarla con la nue
+    // va
     const index = urlsArray.indexOf(urlAntigua);
     if (index !== -1) {
       urlsArray[index] = urlNueva;
@@ -740,7 +738,204 @@ export async function actualizarImagenesDB(id, urlAntigua, urlNueva) {
   } catch (err) {
     console.error('Error en la consulta:', err.message);
   }
+}    
+
+
+ export async function  eliminarNombreProductoDB(id) {
+
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .update({ nombre_producto: null }) // O el valor que desees asignar
+      .eq('producto_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar el nombre del producto:', error.message);
+      return null;
+    }
+
+    console.log('Nombre del producto eliminado:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación del nombre del producto:', err.message);
+    return null;
+  } 
 } 
+
+export async function eliminarPrecioProductoDB(id) {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .update({ precio: null }) // O el valor que desees asignar
+      .eq('producto_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar el precio del producto:', error.message);
+      return null;
+    }
+
+    console.log('Precio del producto eliminado:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación del precio del producto:', err.message);
+    return null;
+  } 
+} 
+
+export async function eliminarTallesProductoDB(id) {
+  try {
+    const { data, error } = await supabase
+      .from('talles')
+      .update({ insertar_talle: null }) // O el valor que desees asignar
+      .eq('talle_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar los talles del producto:', error.message);
+      return null;
+    }
+
+    console.log('Talles del producto eliminados:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación de los talles del producto:', err.message);
+    return null;
+  } 
+} 
+
+export async function eliminarColoresProductoDB(id) {
+  try {
+    const { data, error } = await supabase
+      .from('colores')
+      .update({ insertar_color: null }) // O el valor que desees asignar
+      .eq('color_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar los colores del producto:', error.message);
+      return null;
+    }
+
+    console.log('Colores del producto eliminados:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación de los colores del producto:', err.message);
+    return null;
+  } 
+} 
+
+export async function eliminarStockProductoDB(id) {
+  try {
+    const { data, error } = await supabase
+      .from('productos_variantes')
+      .update({ stock: null }) // O el valor que desees asignar
+      .eq('producto_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar el stock del producto:', error.message);
+      return null;
+    }
+
+    console.log('Stock del producto eliminado:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación del stock del producto:', err.message);
+    return null;
+  } 
+} 
+
+export async function eliminarDetalleProductoDB(id) {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .update({ detalles: null }) // O el valor que desees asignar
+      .eq('producto_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar los detalles del producto:', error.message);
+      return null;
+    }
+
+    console.log('Detalles del producto eliminados:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación de los detalles del producto:', err.message);
+    return null;
+  } 
+}
+
+export async function eliminarDescripcionProductoDB(id) {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .update({ descripcion: null }) // O el valor que desees asignar
+      .eq('producto_id', id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar la descripción del producto:', error.message);
+      return null;
+    }
+
+    console.log('Descripción del producto eliminada:', data);
+    return data;
+  } catch (err) {
+    console.error('Error en la eliminación de la descripción del producto:', err.message);
+    return null;
+  } 
+}
+
+
+
+
+
+
+export const eliminarImagenesDB = async (producto_id, urls) => {
+  try {
+    // Primero obtenemos el array de imágenes actual
+    const { data: imagenData, error: fetchError } = await supabase
+      .from('imagenes')
+      .select('urls')
+      .eq('producto_id', producto_id)
+      .single() // Solo queremos un objeto, no un array de resultados
+   
+
+    if (fetchError) {
+      console.error('Error al obtener las imágenes:', fetchError.message);
+      return;
+    }
+
+    let urlsArray = imagenData.urls || []; // Si está vacío, asignamos un array vacío
+
+    // Filtrar las URLs que no están en el array de URLs a eliminar
+    urlsArray = urlsArray.filter(url=>!url.includes(urls))
+
+    // Actualizar el array modificado en la base de datos
+    const { data, error } = await supabase
+      .from('imagenes')
+      .update({ urls: urlsArray })
+      .eq('producto_id', producto_id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar imágenes:', error.message);
+    }
+
+    console.log(data, 'Imágenes actualizadas');
+
+    return data;
+  } catch (err) {
+    console.error('Error en la consulta:', err.message);
+  } 
+};
+
+
+
+
 
 
 export async function ingresarIDVariantesDB(insertar_variantes) {

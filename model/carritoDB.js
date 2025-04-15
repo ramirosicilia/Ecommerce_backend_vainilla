@@ -182,10 +182,9 @@ export async function ingresarCategoriaDB(category) {
 
 
 
-
 export async function ingresarTallesDB(insertar_talle) {
 
- 
+
   try {
     const { data, error } = await supabase
       .from('talles')
@@ -640,37 +639,128 @@ export async function updateDescripcionProductoDB(descripcion, id) {
   }
 }
 
-export async function updateColorProductoDB(insertar_color, id) {
+
+
+
+export async function updateColorProductoDB(insertar_color, color_id, producto_id) {
   try {
-    const { error } = await supabase
+    console.log("🔽 Entrando a updateColoresProductoDB...");
+    console.log("📦 producto_id:", producto_id);
+    console.log("⬆️ Cambiar de color_id:", color_id, "➡️ a:", insertar_color);
+
+    // 1️⃣ Obtener el color_id asociado al producto_id
+    const { data: productoData, error: errorFetchColor } = await supabase
+      .from('productos_variantes')
+      .select('talle_id')
+      .limit(1)  // Limita a 1 para asegurar que solo se obtenga un registro
+      .eq('producto_id', producto_id)
+      .single();  // Usamos .single() ya que debería haber solo un registro
+
+    if (errorFetchColor) {
+      console.error("❌ Error al obtener color_id:", errorFetchColor.message);
+      throw new Error("Error al obtener color_id: " + errorFetchColor.message);
+    }
+
+    const talle_id = productoData?.talle_id;  // Asignamos el color_id obtenido de la consulta
+
+    console.log("🎨 talle_id:", talle_id);
+
+    // 2️⃣ Actualizar la tabla 'productos_variantes' con el nuevo talle_id
+    const { error: errorUpdateVariante } = await supabase
+      .from("productos_variantes")
+      .update({ color_id: color_id })  // Actualizamos con el nuevo talle
+      .match({ producto_id,talle_id ,color_id});
+
+    if (errorUpdateVariante) {
+      console.error("❌ Error al actualizar productos_variantes:", errorUpdateVariante.message);
+      throw new Error("Error al actualizar productos_variantes: " + errorUpdateVariante.message);
+    }
+
+    console.log("✅ productos_variantes actualizado con nuevo color_id:", insertar_color);
+
+    // 3️⃣ Actualizar la tabla 'talles' si es necesario
+    const { error: errorUpdateColor } = await supabase
       .from("colores")
-      .update({ insertar_color })
-      .eq("color_id", id);
+      .update({ insertar_color: insertar_color })  
+      .match({ color_id });
 
-    if (error) throw error;
-    
-    return;
+    if (errorUpdateColor) {
+      console.error("❌ Error al actualizar talle:", errorUpdateColor.message);
+      throw new Error("Error al actualizar talle: " + errorUpdateColor.message);
+    }
+
+    console.log("✅ Talle actualizado en la tabla 'talles' con nombre:", insertar_color);
+
   } catch (error) {
-    console.error("Error en updateColorProductoDB:", error.message);
+    console.error("❌ Error en updateTalleProductoDB:", error.message);
     throw error;
   }
 }
 
-export async function updateTalleProductoDB(insertar_talle, id) {
+
+
+
+export async function updateTalleProductoDB(insertar_talle, talle_id, producto_id) {
   try {
-    const { error } = await supabase
-      .from("talles")
-      .update({ insertar_talle }) // Corregido: Se debe pasar un objeto {}
-      .eq("talle_id", id);
+    console.log("🔽 Entrando a updateTalleProductoDB...");
+    console.log("📦 producto_id:", producto_id);
+    console.log("⬆️ Cambiar de talle_id:", talle_id, "➡️ a:", insertar_talle);
 
-    if (error) throw error;
-    
-    return;
+    // 1️⃣ Obtener el color_id asociado al producto_id
+    const { data: productoData, error: errorFetchColor } = await supabase
+      .from('productos_variantes')
+      .select('color_id')
+      .limit(1)  // Limita a 1 para asegurar que solo se obtenga un registro
+      .eq('producto_id', producto_id)
+      .single();  // Usamos .single() ya que debería haber solo un registro
+
+    if (errorFetchColor) {
+      console.error("❌ Error al obtener color_id:", errorFetchColor.message);
+      throw new Error("Error al obtener color_id: " + errorFetchColor.message);
+    }
+
+    const color_id = productoData?.color_id;  // Asignamos el color_id obtenido de la consulta
+
+    console.log("🎨 color_id:", color_id);
+
+    // 2️⃣ Actualizar la tabla 'productos_variantes' con el nuevo talle_id
+    const { error: errorUpdateVariante } = await supabase
+      .from("productos_variantes")
+      .update({ talle_id: talle_id })  // Actualizamos con el nuevo talle
+      .match({ producto_id, color_id, talle_id });
+
+    if (errorUpdateVariante) {
+      console.error("❌ Error al actualizar productos_variantes:", errorUpdateVariante.message);
+      throw new Error("Error al actualizar productos_variantes: " + errorUpdateVariante.message);
+    }
+
+    console.log("✅ productos_variantes actualizado con nuevo talle_id:", insertar_talle);
+
+    // 3️⃣ Actualizar la tabla 'talles' si es necesario
+    const { error: errorUpdateTalle } = await supabase
+      .from("talles")
+      .update({ insertar_talle: insertar_talle })  
+      .match({ talle_id });
+
+    if (errorUpdateTalle) {
+      console.error("❌ Error al actualizar talle:", errorUpdateTalle.message);
+      throw new Error("Error al actualizar talle: " + errorUpdateTalle.message);
+    }
+
+    console.log("✅ Talle actualizado en la tabla 'talles' con nombre:", insertar_talle);
+
   } catch (error) {
-    console.error("Error en updateTalleProductoDB:", error.message);
+    console.error("❌ Error en updateTalleProductoDB:", error.message);
     throw error;
   }
 }
+
+
+
+
+
+
+
 
 export async function updateStockProductoDB(stock, id) {
   try {

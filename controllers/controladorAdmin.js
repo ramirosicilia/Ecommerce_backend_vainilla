@@ -253,31 +253,54 @@ export async function updateDescripcionProducto(req,res){
 
 } 
 
-export async function updateColorProducto(req,res){ 
+export async function updateColorProducto(req, res) {
+  try {
+    const {
+      insertar_color,     // Nuevo nombre del color (para tabla "colores")
+      producto_id,        // ID del producto    
+    } = req.body;
 
-  let {insertar_color}=req.body 
+    const color_id = req.params.id; // ID del color a modificar
 
-  let id=req.params.id 
-  console.log(insertar_color,id+"insertados")
+    console.log("🎯 ID del color:", color_id);
+    console.log("📝 Nuevo nombre del color:", insertar_color);
 
- 
-  updateColorProductoDB(insertar_color,id)
+    // Ejecutar la función que actualiza ambas tablas
+    await updateColorProductoDB(insertar_color, color_id, producto_id);
 
-  res.json("actualizado")
+    res.status(200).json("Color actualizado correctamente");
+  } catch (error) {
+    console.error("❌ Error en controlador:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+}
 
-} 
+
 
 
 
 export async function updateTalleProducto(req,res){ 
 
-  let {insertar_talle}=req.body 
+  const {
+    insertar_talle,     
+    producto_id,          
+  } = req.body;
 
-  let id=req.params.id 
+  let talle_id=req.params.id 
 
-  updateTalleProductoDB(insertar_talle,id)
+  try{  
 
-  res.json("actualizado")
+    updateTalleProductoDB(insertar_talle,talle_id,producto_id)
+
+     res.json("actualizado")
+
+  } 
+
+  catch(err){ 
+
+    console.log('hubo un error al actualizar la variante')
+
+  }
 
 }  
 

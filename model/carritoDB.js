@@ -874,47 +874,139 @@ export async function eliminarPrecioProductoDB(id) {
   } 
 } 
 
-export async function eliminarTallesProductoDB(id) {
+
+
+export async function eliminarTallesProductoDB(talle_id, producto_id) {
   try {
+    console.log("🔽 Entrando a eliminarTallesProductoDB...");
+    console.log("🧩 talle_id:", talle_id);
+    console.log("📦 producto_id:", producto_id);
+
+    // 1️⃣ Buscar el color_id relacionado al producto y talle
+    console.log("🔍 Buscando color_id asociado al producto y talle...");
+    const { data: varianteData, error: errorFetchColor } = await supabase
+      .from('productos_variantes')
+      .select('color_id')
+      .eq('producto_id', producto_id)
+      .eq('talle_id', talle_id)
+      .maybeSingle(); // Acepta null si no hay coincidencia
+
+    if (errorFetchColor) {
+      console.error("❌ Error al obtener color_id:", errorFetchColor.message);
+      throw new Error("Error al obtener color_id: " + errorFetchColor.message);
+    }
+
+    const color_id = varianteData?.color_id || null;
+    console.log("🎨 color_id encontrado:", color_id);
+
+    // 2️⃣ Actualizar productos_variantes: poner talle_id en null
+    console.log("🧽 Limpiando talle en productos_variantes...");
+    const matchParams = color_id
+      ? { producto_id, color_id, talle_id }
+      : { producto_id, talle_id }; // Si no hay color_id, igual funciona
+
+    const { error: errorUpdateVariante } = await supabase
+      .from('productos_variantes')
+      .update({ talle_id: null })
+      .match(matchParams);
+
+    if (errorUpdateVariante) {
+      console.error("❌ Error al actualizar productos_variantes:", errorUpdateVariante.message);
+      throw new Error("Error al actualizar productos_variantes: " + errorUpdateVariante.message);
+    }
+
+    console.log("✅ productos_variantes actualizado: talle_id = null");
+
+    // 3️⃣ Actualizar tabla talles: insertar_talle = null
     const { data, error } = await supabase
       .from('talles')
-      .update({ insertar_talle: null }) // O el valor que desees asignar
-      .eq('talle_id', id)
+      .update({ insertar_talle: null })
+      .eq('talle_id', talle_id)
       .select();
 
     if (error) {
-      console.error('Error al eliminar los talles del producto:', error.message);
+      console.error("❌ Error al actualizar tabla talles:", error.message);
       return null;
     }
 
-    console.log('Talles del producto eliminados:', data);
+    console.log("✅ Talle eliminado de tabla talles:", data);
     return data;
-  } catch (err) {
-    console.error('Error en la eliminación de los talles del producto:', err.message);
-    return null;
-  } 
-} 
 
-export async function eliminarColoresProductoDB(id) {
+  } catch (err) {
+    console.error("❌ Error en la eliminación del talle:", err.message);
+    return null;
+  }
+}
+
+
+
+export async function eliminarColoresProductoDB(color_id, producto_id) {
   try {
-    const { data, error } = await supabase
-      .from('colores')
-      .update({ insertar_color: null }) // O el valor que desees asignar
-      .eq('color_id', id)
-      .select();
+    console.log("🔍 Buscando talle_id asociado al producto y color...");
 
-    if (error) {
-      console.error('Error al eliminar los colores del producto:', error.message);
-      return null;
+    // 1️⃣ Obtener el talle_id correspondiente al producto y color
+    const { data: varianteData, error: errorFetchTalle } = await supabase
+      .from("productos_variantes")
+      .select("talle_id")
+      .eq("producto_id", producto_id)
+      .eq("color_id", color_id)
+      .single() // Esperamos solo una coincidencia
+      .maybeSingle(); // Acepta null si no hay coincidencia
+
+    if (errorFetchTalle) {
+      console.error("❌ Error al obtener talle_id:", errorFetchTalle.message);
+      throw new Error("Error al obtener talle_id: " + errorFetchTalle.message);
     }
 
-    console.log('Colores del producto eliminados:', data);
-    return data;
+    const talle_id = varianteData?.talle_id;
+
+    if (!talle_id) {
+      throw new Error("No se encontró talle_id para el producto y color dados.");
+    }
+
+    console.log("📏 talle_id encontrado:", talle_id);
+
+    // 2️⃣ Actualizar productos_variantes para poner color_id en null
+    const { error: errorUpdateVariante } = await supabase
+      .from("productos_variantes")
+      .update({ color_id: null })
+      .match({
+        producto_id,
+        talle_id,
+        color_id
+      });
+
+    if (errorUpdateVariante) {
+      console.error("❌ Error al actualizar productos_variantes:", errorUpdateVariante.message);
+      throw new Error("Error al actualizar productos_variantes: " + errorUpdateVariante.message);
+    }
+
+    console.log("✅ color_id eliminado de productos_variantes");
+
+    // 3️⃣ (Opcional) Actualizar también la tabla colores
+    const { error: errorUpdateColor } = await supabase
+      .from("colores")
+      .update({ insertar_color: null })
+      .eq("color_id", color_id);
+
+    if (errorUpdateColor) {
+      console.error("❌ Error al actualizar tabla colores:", errorUpdateColor.message);
+      throw new Error("Error al actualizar tabla colores: " + errorUpdateColor.message);
+    }
+
+    console.log("✅ color_id actualizado a null en tabla colores");
+
+    return true;
   } catch (err) {
-    console.error('Error en la eliminación de los colores del producto:', err.message);
+    console.error("❌ Error en eliminación de color:", err.message);
     return null;
-  } 
+  }
 } 
+
+
+
+
+
 
 export async function eliminarStockProductoDB(id) {
   try {

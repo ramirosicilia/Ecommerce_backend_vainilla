@@ -488,18 +488,19 @@ export async function eliminarTallesController(req,res){
 
 
   let id=req.params.id 
+  const producto_id=req.body.producto_id
 
-   await eliminarTallesProductoDB(id)
+   await eliminarTallesProductoDB(id,producto_id)
 
   res.json("actualizado")
 } 
 
 export async function eliminarColoresController(req,res){
 
-
+  const producto_id=req.body.producto_id
   let id=req.params.id 
 
-   await eliminarColoresProductoDB(id)
+   await eliminarColoresProductoDB(id,producto_id)
 
   res.json("actualizado")
 } 

@@ -307,14 +307,14 @@ export async function updateTalleProducto(req,res){
 export async function updateStockProducto(req,res){ 
 
   try {
-    const { stock } = req.body;
-    let{ id } = req.params;
+    const { producto_id,stock } = req.body;
+    let variante_id=req.params.id 
 
     if (typeof stock !== "number") {
       return res.status(400).json({ error: "Stock debe ser un número" });
     }
 
-    const error = await updateStockProductoDB(stock, id);
+    const error = await updateStockProductoDB(stock,variante_id,producto_id);
     if (error) return res.status(500).json({ error });
 
     res.json({ mensaje: "Stock actualizado correctamente" });
@@ -507,10 +507,12 @@ export async function eliminarColoresController(req,res){
 
 export async function eliminarStockController(req,res){
 
-
+  
   let id=req.params.id 
+  
+  const producto_id=req.body.producto_id
  
-   await eliminarStockProductoDB(id)
+   await eliminarStockProductoDB(id,producto_id) 
 
   res.json("actualizado")
 } 

@@ -757,27 +757,45 @@ export async function updateTalleProductoDB(insertar_talle, talle_id, producto_i
 
 
 
-
-
-
-
-
-export async function updateStockProductoDB(stock, id) {
+export async function updateStockProductoDB(stock, variante_id,producto_id) {
   try {
-    if (typeof stock !== "number") {
-      throw new Error("El stock debe ser un número");
+    console.log("🔽 Entrando a updateStockProductoDB...");
+    console.log("📦 producto_id:", producto_id);
+    console.log("📦 variante_id (productos_variantes.id):", variante_id);
+    console.log("📦 nuevo stock:", stock);
+
+    // 1️⃣ Obtener los color_id y talle_id para la variante específica
+    const { data: varianteData, error: errorFetchVariante } = await supabase
+      .from('productos_variantes')
+      .select('color_id, talle_id')
+      .eq('variante_id', variante_id)
+      .single();
+
+    if (errorFetchVariante) {
+      console.error("❌ Error al obtener color_id y talle_id:", errorFetchVariante.message);
+      throw new Error("Error al obtener la variante del producto");
     }
 
-    const { error } = await supabase
+    const { color_id, talle_id } = varianteData;
+
+    console.log("🎨 color_id:", color_id);
+    console.log("📏 talle_id:", talle_id);
+
+    // 2️⃣ Actualizar el stock en productos_variantes
+    const { error: errorUpdateStock } = await supabase
       .from("productos_variantes")
       .update({ stock })
-      .eq("producto_id", id);
+      .match({ producto_id, color_id, talle_id });
 
-    if (error) throw error;
-    
-    return;
+    if (errorUpdateStock) {
+      console.error("❌ Error al actualizar stock en productos_variantes:", errorUpdateStock.message);
+      throw new Error("Error al actualizar stock");
+    }
+
+    console.log("✅ Stock actualizado correctamente en productos_variantes");
+
   } catch (error) {
-    console.error("Error en updateStockProductoDB:", error.message);
+    console.error("❌ Error en updateStockProductoDB:", error.message);
     throw error;
   }
 }
@@ -1006,28 +1024,55 @@ export async function eliminarColoresProductoDB(color_id, producto_id) {
 
 
 
-
-
-export async function eliminarStockProductoDB(id) {
+export async function eliminarStockProductoDB(variante_id, producto_id) {
   try {
-    const { data, error } = await supabase
-      .from('productos_variantes')
-      .update({ stock: null }) // O el valor que desees asignar
-      .eq('producto_id', id)
-      .select();
+    console.log("🔍 Buscando variante del producto para eliminar stock...");
 
-    if (error) {
-      console.error('Error al eliminar el stock del producto:', error.message);
-      return null;
+    // 1️⃣ Verificar si existe la variante del producto
+    const { data: varianteData, error: errorBuscarVariante } = await supabase
+      .from("productos_variantes")
+      .select("stock")
+      .eq("producto_id", producto_id)
+      .eq("variante_id", variante_id)
+      .single() // Esperamos solo una coincidencia
+      .maybeSingle(); // Acepta null si no hay coincidencia
+
+    if (errorBuscarVariante) {
+      console.error("❌ Error al obtener variante:", errorBuscarVariante.message);
+      throw new Error("Error al obtener la variante del producto: " + errorBuscarVariante.message);
     }
 
-    console.log('Stock del producto eliminado:', data);
-    return data;
+    if (!varianteData) {
+      throw new Error("No se encontró la variante del producto con los datos dados.");
+    }
+
+    console.log("📦 Variante encontrada con stock:", varianteData.stock);
+
+    // 2️⃣ Actualizar el stock a 0
+    const { error: errorActualizarStock } = await supabase
+      .from("productos_variantes")
+      .update({ stock: 0 })
+      .match({
+        producto_id,
+        variante_id
+      });
+
+    if (errorActualizarStock) {
+      console.error("❌ Error al actualizar stock:", errorActualizarStock.message);
+      throw new Error("Error al actualizar stock: " + errorActualizarStock.message);
+    }
+
+    console.log("✅ Stock actualizado a 0 en la variante del producto");
+
+    return true;
   } catch (err) {
-    console.error('Error en la eliminación del stock del producto:', err.message);
+    console.error("❌ Error en eliminación de stock:", err.message);
     return null;
-  } 
-} 
+  }
+}
+
+
+
 
 export async function eliminarDetalleProductoDB(id) {
   try {

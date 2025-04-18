@@ -347,6 +347,10 @@ export async function deleteCarrito(req, res) {
     res.status(500).json({ success: false, message: "Error eliminando el producto", error: err.message });
   }
 } 
+ 
+
+
+
 
 
 

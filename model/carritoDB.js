@@ -52,10 +52,49 @@ export async function insertarCarritoDB(datos) {
 
 
 
-export async function borrarCarritoDB(id, color_id, talle_id) {
+export async function borrarCarritoDB(id) {
   try {
-    // 1️⃣ Eliminar producto de la tabla "productos"
-    const { data: dataProducto, error: errorProducto } = await supabase
+    // 1️⃣ Obtener todas las variantes del producto
+    const { data: variantes, error: errorVariantes } = await supabase
+      .from("productos_variantes")
+      .select("variante_id, color_id, talle_id")
+      .eq("producto_id", id);
+
+
+    // 2️⃣ Extraer todos los color_id y talle_id únicos
+    const colorIds = [...new Set(variantes.map(v => v.color_id))];
+    const talleIds = [...new Set(variantes.map(v => v.talle_id))];
+    const variante_id = variantes.map(v => v.variante_id);
+
+    // 3️⃣ Eliminar todas las variantes
+    const { data: variantesEliminadas, error: errorEliminacion } = await supabase
+      .from("productos_variantes")
+      .delete()
+      .in("variante_id", variante_id)
+      .select();
+
+    if (errorEliminacion) throw new Error(`Error eliminando variantes: ${errorEliminacion.message}`);
+
+    // 4️⃣ Eliminar todos los colores asociados
+    const { data: coloresEliminados, error: errorColor } = await supabase
+      .from("colores")
+      .delete()
+      .in("color_id", colorIds)
+      .select();
+
+    if (errorColor) throw new Error(`Error eliminando colores: ${errorColor.message}`);
+
+    // 5️⃣ Eliminar todos los talles asociados
+    const { data: tallesEliminados, error: errorTalle } = await supabase
+      .from("talles")
+      .delete()
+      .in("talle_id", talleIds)
+      .select();
+
+    if (errorTalle) throw new Error(`Error eliminando talles: ${errorTalle.message}`);
+
+    // 6️⃣ Eliminar el producto en sí
+    const { data: productoEliminado, error: errorProducto } = await supabase
       .from("productos")
       .delete()
       .eq("producto_id", id)
@@ -63,35 +102,18 @@ export async function borrarCarritoDB(id, color_id, talle_id) {
 
     if (errorProducto) throw new Error(`Error eliminando producto: ${errorProducto.message}`);
 
-    // 2️⃣ Eliminar color de la tabla "colores"
-    const { data: dataColor, error: errorColor } = await supabase
-      .from("colores")
-      .delete()
-      .eq("color_id", color_id)
-      .select();
-
-    if (errorColor) throw new Error(`Error eliminando color: ${errorColor.message}`);
-
-    // 3️⃣ Eliminar talle de la tabla "talles"
-    const { data: dataTalle, error: errorTalle } = await supabase
-      .from("talles")
-      .delete()
-      .eq("talle_id", talle_id)
-      .select();
-
-    if (errorTalle) throw new Error(`Error eliminando talle: ${errorTalle.message}`);
-
-    // 4️⃣ Retornar todos los datos eliminados
+    // ✅ Retornar confirmación
     return {
       eliminado: true,
-      productos: dataProducto,
-      colores: dataColor,
-      talles: dataTalle
+      producto: productoEliminado,
+      variantes: variantesEliminadas,
+      colores: coloresEliminados,
+      talles: tallesEliminados
     };
 
   } catch (err) {
     console.error("Error eliminando productos:", err.message);
-    throw err; // Propagar el error al controlador
+    throw err;
   }
 }
 

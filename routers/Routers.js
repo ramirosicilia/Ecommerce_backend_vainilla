@@ -5,7 +5,7 @@ import { authenticateToken, controladorAdmin,
     } from "../controllers/Controladores.js"; 
  import { desactivarProductosController } from "../controllers/desactivarProductController.js";
  import { administradorRegistro, deleteCarrito, respuestaInsercion,  obtenerImagenesController,actualizarImagenesController, ingresoCaracterticasController, updateNombreProducto, updatePrecioProducto, updateDetallesProducto, updateDescripcionProducto, updateColorProducto, updateTalleProducto, updateStockProducto, updateCategoriaProducto, agregarImagenesController, eliminarImagenesController, eliminarNombrecontroller, eliminarPrecioController, eliminarTallesController, eliminarColoresController, eliminarStockController, eliminarDetalleController, eliminarDescripcionController  } from "../controllers/controladorAdmin.js";
- import { crearUser } from "../controllers/controladorUser.js";
+ import { crearUser, obtenerUsuariosController } from "../controllers/controladorUser.js";
  import { upload } from "../controllers/controladorAdmin.js"; 
  import express from "express" 
  import { actualizarCategoriaController, agregarCategoriaControllers, desactivarCategoriasController, eliminarCategoriaController, getProductsCategorysController } from "../controllers/ControladorCategorias.js";
@@ -24,6 +24,7 @@ router.post("/registro",crearUser)
 router.post("/recuperacion-cuenta",recuperacionCuentaController)
 router.get('/verificar-email/:token', recuperacionMailControlador) 
 router.post("/nuevo-registro",nuevoRegistroControlador) 
+router.get("/obtener-usuarios",obtenerUsuariosController)
 router.post("/agregar-categorias",agregarCategoriaControllers)
 router.get("/obtener-categorias",getProductsCategorysController) 
 router.get("/obtener-imagenes",obtenerImagenesController)

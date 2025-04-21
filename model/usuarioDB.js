@@ -49,7 +49,26 @@ export async function obtenerUsuarioDB(user,) {
         console.error('Error al verificar existencia:', err.message);
         return { success: false, message: 'Error al verificar existencia.', error: err.message };
     }
-} 
+}  
+
+ export async function obtenerUsuarios() {
+    try {
+        const { data, error } = await supabase
+            .from('usuarios')
+            .select('*'); // Selecciona todos los campos de la tabla 'usuarios'
+
+        if (error) {
+            throw error;
+        }
+        console.log('esta es la data',data)
+        return data; // Retorna todos los usuarios
+    } catch (err) {
+        console.error('Error al obtener usuarios:', err.message);
+        return { success: false, message: 'Error al obtener usuarios.', error: err.message };
+    }	
+
+}
+
 
 export async function updateUsuarioDB(user,pass,mail) {
     try {

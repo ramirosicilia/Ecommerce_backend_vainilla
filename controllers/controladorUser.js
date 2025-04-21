@@ -1,7 +1,6 @@
-import { crearUserDB } from "../model/usuarioDB.js"
+import { crearUserDB, obtenerUsuarios } from "../model/usuarioDB.js"
 import { obtenerUsuarioDB } from "../model/usuarioDB.js"
 import bcrypt from "bcryptjs"; 
-
 
 
 export async function crearUser(req, res){      
@@ -27,7 +26,7 @@ export async function crearUser(req, res){
         }  
 
 
-          
+    
           const hash= await bcrypt.hash(usuarioContrasena, 10);
           const data = {email:email,contrasena:hash,dni:dni,apellido:apellido,nombre:nombre,usuario:usuario}; 
           console.log(data)
@@ -49,5 +48,25 @@ export async function crearUser(req, res){
         res.status(400).json({ error: err.message});
     }   
 } 
+
+export async function obtenerUsuariosController(req, res){  
+    
+           
+    try{
+        const usuarios = await obtenerUsuarios(); 
+        console.log(usuarios,'data recibidaaa') 
+        if(usuarios){
+            res.status(200).json({message: 'Usuarios obtenidos, exictosamente' ,user:usuarios});
+        }else{
+            res.status(400).json({error: 'Error obteniendo los usuarios'});
+        }   
+    }
+    catch(err){
+      
+        res.status(400).json({ error: err.message});
+    }   
+} 
+
+
 
 

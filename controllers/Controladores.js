@@ -127,6 +127,7 @@ export async function controladorLogeo(req, res, next) {
             req.token = token; // Almacena el token en la solicitud
             req.isUser = true; // Marca como usuario verificado 
             req.dataUser = data[0].dni; // Almacena los datos del usuario
+            req.userName = data[0].usuario; // Almacena los datos del usuario
      
 
             return next(); // Pasa al siguiente controlador
@@ -154,7 +155,8 @@ export function authenticateToken(req, res, next) {
             return res.status(403).json({ error: 'Token no válido' }); 
         }
         req.user = user; 
-        res.json({respuesta:"token valido",token}) 
+        req.token
+       next(); // Pasa al siguiente middleware o controlador
       
         
     }); 
@@ -174,13 +176,11 @@ export function authenticateToken(req, res, next) {
 export async function controladorAdmin(req,res,next){  
 
 
-
      try{  
 
        const {isAdmin,dataAdmin}=req  
 
-     
-
+    
          if(isAdmin){
             return  res.json({respuesta:' administrador exictosamente',dataAdmin,reedireccionar:'../public/dashboard.html'})
          } 
@@ -200,13 +200,11 @@ export async function controladorAdmin(req,res,next){
 
   export async function controladorUser(req,res,next){  
 
-
-
     try{  
 
-        const {isUser,dataUser,token}=req 
+        const {isUser,dataUser,userName,token}=req 
           if( isUser){
-              return res.json({respuesta:' usuario exictosamente',token,usuario:dataUser,reedireccionar:'../public/productosUsuario.html'})
+              return res.json({respuesta:' usuario exictosamente',token,usuario:dataUser,userName:userName,reedireccionar:'../public/productosUsuario.html'})
           } 
      
             return next()
